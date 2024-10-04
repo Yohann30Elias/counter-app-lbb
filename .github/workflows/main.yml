@@ -1,8 +1,7 @@
 name: "Build and Push to GHCR"
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 env:
   working-directroy: ./
@@ -22,8 +21,10 @@ jobs:
           password: ${{secrets.GITHUB_TOKEN}}
 
       - name: 'Build Inventory Image'
+        env: 
+          tag: ${{ github.ref_name }}
         run: |
-            docker build -f ./Dockerfile.frontend --tag ghcr.io/yohann30elias/counter-app-frontend:latest .
-            docker build -f ./Dockerfile.backend --tag ghcr.io/yohann30elias/counter-app-backend:latest .
-            docker push ghcr.io/yohann30elias/counter-app-frontend:latest
-            docker push ghcr.io/yohann30elias/counter-app-backend:latest
+            docker build -f ./Dockerfile.frontend --tag ghcr.io/yohann30elias/counter-frontend:${tag} .
+            docker build -f ./Dockerfile.backend --tag ghcr.io/yohann30elias/counter-backend:${tag} .
+            docker push ghcr.io/yohann30elias/counter-frontend:${tag}
+            docker push ghcr.io/yohann30elias/counter-backend:${tag}
